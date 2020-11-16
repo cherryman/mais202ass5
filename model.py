@@ -9,13 +9,20 @@ import torch.optim as optim
 import torch.utils as utils
 import torchvision
 
-
+torch.autograd.set_detect_anomaly(True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_classes = 10
 
 X_train = np.load("train_x.npy")
+X_train = np.repeat(X_train[:,np.newaxis,:,:],3, 1) # Triple channels to work with dimensions of pretrained weights
+X_train = X_train/X_train.max() # Normalize input, maybe should do with stdev instead?
+
 y_train = pd.read_csv("train_y.csv", index_col="ID").to_numpy()
+y_train = np.reshape(y_train,(len(y_train),)) # turn y_train into one-dimensional vector
+
 X_test = np.load("test_x.npy")
+
+
 
 # Not calling .to(device) to not run out of memory
 X_train = torch.from_numpy(X_train)
@@ -59,14 +66,15 @@ class Dataset(utils.data.Dataset):
 loader = utils.data.DataLoader(Dataset(), batch_size=16)
 net = model_conv
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 epochs = 20
 for epoch in range(epochs):
-
+    print("Epoch {}".format(epoch))
     running_loss = 0.0
     for i, (x, y) in enumerate(loader, 1):
         x, y = x.to(device), y.to(device)
+
 
         optimizer.zero_grad()
         y_preds = net(x)
