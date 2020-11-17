@@ -11,7 +11,13 @@ import torch.utils as utils
 import torchvision
 from net import Net
 FILEPATH = "model-state-dict"
+'''Params to try changing:
+-   threshold for determining if white on black or black on white
+-   threshold for cutting off pixel noise
+-   Learning rate
+-   momentum
 
+'''
 torch.autograd.set_detect_anomaly(True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Device: {}".format(device))
@@ -22,23 +28,18 @@ y_train = pd.read_csv("train_y.csv", index_col="ID").to_numpy()
 y_train = np.reshape(y_train,(len(y_train),)) # turn y_train into one-dimensional vector
 
 X_train = np.load("train_x.npy")
-X_train = X_train/X_train.max() # Normalize input, maybe should do with stdev instead?
 
 for im in X_train:  # remove noise from images, probably needs some work
+    im= im/im.max()
     mean = np.mean(im)
-
-
     if mean < 0.7:
         im[im < 0.8] = 0
     else:
-        im[im > 0.2] = 0
+        im = 1 - im
+        im[im < 0.8] = 0
 
 # X_train = np.repeat(X_train[:,np.newaxis,:,:],3, 1) # Triple channels to work with dimensions of pretrained weights
 
-
-
-
-X_test = np.load("test_x.npy")
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.05)
 
 
@@ -46,9 +47,8 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.
 X_train = torch.from_numpy(X_train)
 X_val = torch.from_numpy(X_val)
 y_train = torch.from_numpy(y_train)
-X_test = torch.from_numpy(X_test)
-X_train = X_train.unsqueeze(1)
-X_test = X_test.unsqueeze(1)   # add artificial 4th dimension to fit dimensions needed for conv layer
+
+X_train = X_train.unsqueeze(1)  # add artificial 4th dimension to fit dimensions needed for conv layer
 X_val = X_val.unsqueeze(1)
 # model_conv = torchvision.models.vgg19(pretrained=True)
 # for param in model_conv.parameters():
@@ -88,7 +88,7 @@ train_loader = utils.data.DataLoader(Dataset(X_train, y_train), batch_size=16)
 val_loader = utils.data.DataLoader(Dataset(X_val, y_val), batch_size=16)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(net.parameters(), lr=0.001)
+optimizer = optim.SGD(net.parameters(), lr=0.001,momentum=0.9)
 
 epochs = 20
 for epoch in range(epochs):
@@ -129,12 +129,12 @@ for epoch in range(epochs):
             loss = criterion(y_preds, y)
             running_loss += loss.item()
             for index, item in enumerate(y_preds):
-                if (torch.argmax(y_preds) == y[index]):
+                if (torch.argmax(item) == y[index]):
                     correct += 1
                 else:
                     incorrect += 1
                 
 
     print("Validation loss: {:5.2f}".format(running_loss))      # maybe need to scale validation loss to be proportional to train loss but not really necessary
-    print("Validation accuracy: {:5.2f}".format(correct/(incorrect + correct))) 
-    torch.save(net.state_dict(), "dropout-added-{}-epoch-{}-{:5.2f}-val-loss.pt".format(FILEPATH, epoch + 1, running_loss))
+    print("Validation accuracy: {:5.4f}".format(correct/(incorrect + correct))) 
+    torch.save(net.state_dict(), "{}-epoch-{}-{:5.2f}-val-loss.pt".format(FILEPATH, epoch + 1, running_loss))
