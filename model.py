@@ -73,7 +73,7 @@ val_loader = utils.data.DataLoader(Dataset(X_val, y_val), batch_size=16)
 net = model_conv
 net.load_state_dict(torch.load('model-state-dict-epoch-20.pt'))
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 epochs = 20
 for epoch in range(epochs):
