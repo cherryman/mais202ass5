@@ -1,17 +1,10 @@
-from sklearn.model_selection import train_test_split
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-import torch.utils as utils
-import torchvision
+from utils import n_classes, device
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 class Net(nn.Module):
-    def __init__(self, dout, *, device=device):
+    def __init__(self, *, device=device):
         super(Net, self).__init__()
         self.to(device=device)
 
@@ -21,8 +14,7 @@ class Net(nn.Module):
         self.conv3 = nn.Conv2d(128, 64, 3)
         self.fc1 = nn.Linear(64 * 14 * 14, 1024)
         self.fc2 = nn.Linear(1024, 512)
-        self.fc3 = nn.Linear(512, dout)
-        
+        self.fc3 = nn.Linear(512, n_classes)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
