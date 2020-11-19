@@ -34,8 +34,9 @@ def show(arr):
 def norm(X) -> torch.Tensor:
     """Normalise the dataset and return tensor."""
     x = torch.from_numpy(X)
-    for im in x:  # remove noise from images, probably needs some work
-        im[im < 220] = 0
+
+    for im in x:
+        im[im < 255] = 0
 
     # add artificial 4th dimension to fit dimensions needed for conv layer
     return x.unsqueeze(1)
