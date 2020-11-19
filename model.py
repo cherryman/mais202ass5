@@ -10,7 +10,6 @@ from utils import Dataset, norm, device
 from net import Net
 
 FILEPATH = "model-state-dict"
-torch.autograd.set_detect_anomaly(True)
 
 # Not calling .to(device) to not run out of memory
 # norm calls .from_numpy
@@ -22,13 +21,13 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.
 
 net = Net().to(device)
 
-train_loader = utils.data.DataLoader(Dataset(X_train, y_train), batch_size=16)
+train_loader = utils.data.DataLoader(Dataset(X_train, y_train), batch_size=32)
 val_loader = utils.data.DataLoader(Dataset(X_val, y_val), batch_size=16)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-epochs = 30
+epochs = 200
 for epoch in range(epochs):
     print(f"Epoch {epoch + 1}")
 
