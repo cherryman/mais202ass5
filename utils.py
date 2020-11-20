@@ -72,7 +72,7 @@ def generate_transformed_image(im):
     rotation_angle = random.randrange(-15,15)
     im = im.rotate(rotation_angle)
     im = np.array(im)
-    im += np.random.randint(220, 255, size=im.shape)
+    im += np.random.randint(220, 255, size=im.shape) * (np.random.randint(0, 100, size=im.shape) > 95)
     return im
 
 
