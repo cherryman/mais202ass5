@@ -17,7 +17,7 @@ y_train = sorted(y_train)
 
 # Denoise data
 for im in X_train:
-    im[im > 220] = 0
+    im[im < 220] = 0
 # And check to make sure this worked
 
 NUM_PER_CLASS = 15000   # I have 16 GB of RAM and 20000 per class was too much for my computer to handle, could probably be fixed
