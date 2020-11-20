@@ -18,6 +18,7 @@ y_train = sorted(y_train)
 # Denoise data
 for im in X_train:
     im[im < 220] = 0
+
 # And check to make sure this worked
 
 NUM_PER_CLASS = 15000   # I have 16 GB of RAM and 20000 per class was too much for my computer to handle, could probably be fixed
@@ -46,5 +47,5 @@ for num in range(len(counts)):
 print(counts)
 X_train = np.concatenate((X_train,np.array(new_images)),axis=0)
 
-np.save(f"{NUM_PER_CLASS}-per-class-sorted-x-train.npy", X_train)
-np.save("{NUM_PER_CLASS}-per-class-sorted-y-train.npy", y_train)
+np.save("generated_x_train.npy", X_train)
+np.save("generated_y_train.npy", y_train)

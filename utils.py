@@ -63,7 +63,6 @@ def add_noise(image):
     noisy = image + gauss
     return noisy
 
-# print(counts)
 def generate_transformed_image(im):
     im = Image.fromarray(im)
     x_translation = random.randrange(-12,12)
@@ -73,11 +72,7 @@ def generate_transformed_image(im):
     rotation_angle = random.randrange(-15,15)
     im = im.rotate(rotation_angle)
     im = np.array(im)
-    for x in range(len(im)):
-        for y in range(len(im[0])):
-            if random.randrange(0,100) > 95:
-                im[x,y] = random.randrange(220,255)
-    
+    im += np.random.randint(220, 255, size=im.shape)
     return im
 
 

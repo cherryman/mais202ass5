@@ -11,12 +11,8 @@ from net import Net
 
 FILEPATH = "model-state-dict"
 
-# Not calling .to(device) to not run out of memory
-# norm calls .from_numpy
-X_train = norm(np.load("train_x.npy"))
-y_train = pd.read_csv("train_y.csv", index_col="ID").to_numpy().reshape((-1))
-y_train = torch.from_numpy(y_train)
-
+X_train = torch.from_numpy(np.load("generated_x_train.npy")).unsqueeze(1)
+y_train = torch.from_numpy(np.load("generated_y_train.npy")).unsqueeze(1)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.05)
 
 net = Net().to(device)
