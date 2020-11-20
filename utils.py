@@ -63,10 +63,6 @@ def add_noise(image):
     noisy = image + gauss
     return noisy
 
-# X_train = np.load("sorted_X_train.npy")
-
-# y_train = np.load("sorted_y_train.npy")
-# counts = np.load("counts.npy")
 # print(counts)
 def generate_transformed_image(im):
     im = Image.fromarray(im)
@@ -83,31 +79,6 @@ def generate_transformed_image(im):
                 im[x,y] = random.randrange(220,255)
     
     return im
-# new_images = []
-# start_index = 0
-# end_index = counts[0]
-# for num in range(len(counts) - 1):
-#     i = 0
-#     print("Start", start_index)
-#     print("End", end_index)
-#     while i < (10000-counts[num]):
-#         random_index = random.randrange(start_index, end_index)
-#         new_images.append(generate_transformed_image(X_train[random_index]))
-        
-#         y_train = np.append(y_train, num)
-#         i += 1
-#     start_index = end_index
-#     end_index = end_index + counts[num + 1]
-    
 
-# X_train = np.concatenate((X_train,np.array(new_images)),axis=0)
 
-# np.save("balanced_sorted_x_train.npy", X_train)
-# np.save("balanced_sorted_y_train.npy", y_train)
-# for im in X_train:
-#     show(im)
-
-# for index, im in enumerate(X_train):
-#     print(y_train[index])
-#     show(im)
 
