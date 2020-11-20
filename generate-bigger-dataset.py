@@ -11,8 +11,8 @@ y_train = pd.read_csv("train_y.csv", index_col="ID").to_numpy().reshape((-1))
 _, counts = np.unique(y_train, return_counts=True)
 
 # Sort dataset to know where to get base images for each class from
-sorted_X_train = [x for _, x in sorted(zip(y_train,X_train), key=lambda pair: pair[0])] 
-sorted_y_train = sorted(y_train)
+X_train = [x for _, x in sorted(zip(y_train,X_train), key=lambda pair: pair[0])] 
+y_train = sorted(y_train)
 # Maybe check to make sure this worked 
 
 # Denoise data
