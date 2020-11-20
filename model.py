@@ -31,6 +31,7 @@ epochs = 200
 for epoch in range(epochs):
     print(f"Epoch {epoch + 1}")
 
+    net.train()
     running_loss = 0.0
     running_losses = []
     for i, (x, y) in enumerate(train_loader, 1):
@@ -58,6 +59,8 @@ for epoch in range(epochs):
             running_loss = 0.0
 
     # Turn off gradient computations for validation set
+    # and put the net into evaluation mode.
+    net.eval()
     with torch.no_grad():
         running_loss = 0.0
         correct = 0
