@@ -11,14 +11,8 @@ from net import Net
 
 FILEPATH = "deeper-network"
 
-# Not calling .to(device) to not run out of memory
-# norm calls .from_numpy
-X_train = np.load("15000balanced_sorted_x_train.npy")
-y_train = np.load("15000balanced_sorted_y_train.npy")
-
-X_train = torch.from_numpy(X_train).unsqueeze(1)
-y_train = torch.from_numpy(y_train)
-
+X_train = torch.from_numpy(np.load("generated_x_train.npy")).unsqueeze(1)
+y_train = torch.from_numpy(np.load("generated_y_train.npy")).unsqueeze(1)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.05, random_state=22, shuffle=True)
 
 net = Net().to(device)
