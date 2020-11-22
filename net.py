@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from utils import n_classes, device
-
+from attention_augmented_conv import AugmentedConv
 
 class Net(nn.Module):
     def __init__(self, *, device=device):
@@ -13,6 +13,8 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(32),
             nn.Conv2d(32, 32, 3),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(32),
             nn.Conv2d(32, 32, 5, 2),
@@ -41,9 +43,9 @@ class Net(nn.Module):
         )
 
         self.lin = nn.Sequential(
-            nn.Linear(128 * 23 ** 2, 128),
-            nn.ReLU(128),
-            nn.Linear(128, n_classes),
+            nn.Linear(128 * 23 ** 2, 1024),
+            nn.ReLU(1024),
+            nn.Linear(1024, n_classes),
             nn.Softmax(dim=1)
         )
 

@@ -6,27 +6,31 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils as utils
-from utils import Dataset, norm, device
+from utils import Dataset, norm, device, show, weights_init
 from net import Net
 
-FILEPATH = "model-state-dict"
+FILEPATH = "deeper-network"
 
 # Not calling .to(device) to not run out of memory
 # norm calls .from_numpy
-X_train = norm(np.load("train_x.npy"))
-y_train = pd.read_csv("train_y.csv", index_col="ID").to_numpy().reshape((-1))
+X_train = np.load("15000balanced_sorted_x_train.npy")
+y_train = np.load("15000balanced_sorted_y_train.npy")
+
+X_train = torch.from_numpy(X_train).unsqueeze(1)
 y_train = torch.from_numpy(y_train)
 
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.05)
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.05, random_state=22, shuffle=True)
 
 net = Net().to(device)
 
 train_loader = utils.data.DataLoader(Dataset(X_train, y_train), batch_size=32)
 val_loader = utils.data.DataLoader(Dataset(X_val, y_val), batch_size=16)
 
+learning_rate = 0.001
+previous_accuracy = 0
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
+optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9,weight_decay=0.01)
+net.apply(weights_init)
 epochs = 200
 for epoch in range(epochs):
     print(f"Epoch {epoch + 1}")
@@ -75,10 +79,16 @@ for epoch in range(epochs):
                     correct += 1
                 else:
                     incorrect += 1
+    current_accuracy = correct / (incorrect + correct)
+    if previous_accuracy > current_accuracy:
+        learning_rate = learning_rate / 2
+        optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=0.01)
+    else:
+        previous_accuracy = current_accuracy
 
     print("Validation loss: {:5.2f}".format(running_loss))
-    print("Validation accuracy: {:5.4f}".format(correct / (incorrect + correct)))
+    print("Validation accuracy: {:5.4f}".format(current_accuracy))
     torch.save(
         net.state_dict(),
-        f"{FILEPATH}-epoch-{epoch + 1}-{running_loss:5.2f}-val-loss.pt",
+        f"{FILEPATH}-epoch-{epoch + 1}-{running_loss:5.2f}-val-loss-{current_accuracy}-val-accuracy.pt",
     )
