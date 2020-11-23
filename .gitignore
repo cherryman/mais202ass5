@@ -3,3 +3,11 @@ __pycache__/
 *.csv
 *.npy
 *.pt
+
+# Latex
+*.log
+*.aux
+*.fls
+*.out
+*.toc
+*.fdb_latexmk
