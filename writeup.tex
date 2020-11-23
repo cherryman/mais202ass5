@@ -1,7 +1,10 @@
 \documentclass[12pt]{article}
-\title{MAIS }
-\author{Author}
-\date{Date}
+\usepackage{hyperref}
+
+\title{MAIS 202 - Assignment 4}
+\author{Efraim Herstic, Sheheryar Parvaz, Thomas Jiralerspong}
+\date{November 23rd, 2020}
+
 \begin{document}
 \begin{titlepage}
    \begin{center}
@@ -21,9 +24,36 @@
 \end{titlepage}
 \tableofcontents
 \newpage
+
 \section{Implementation}
 \subsection{Model}
-(Sheheryar you probably know best)
+Since we already knew a Convolutional Neural Network (CNN) is
+particularly well suited for computer vision tasks, it was the first
+class of models we used. All our models were developed in PyTorch.
+
+The initial model was based off VGG-19 using PyTorch's built-in
+models\cite{torchvisionmodels}, which include pre-trained weights. Next,
+PyTorch made it easy to remove the classifier layer with our own simple
+linear classification layer. Unfortunately, this model was ineffective
+at classifying, giving validation accuracies under 20\%. However, this
+was before our first data modification and augmentations, so it might've
+been because of that.
+
+Next, instead of using the feature extractor provided by VGG-19, we
+realised that, since the problem is not much related to the classes
+VGG-19 identifies, we should probably use a different approach, opting
+for a custom CNN implementation. Naturally, the model performed
+reasonably well after the denoising and normalisation, with validation
+accuracies above 70\%.
+
+Finally, we realised the problem is in some ways similar to MNIST in
+what the model has to recognise. So, we decided to build a new model
+based off existing models with high accuracies on
+MNIST\cite{kagglemnist}.  The model has some interesting properties,
+including batch normalisation after every convolution and dropout after
+every pooling. Thanks to this, our model generalised much better,
+yielding over 83\% accuracy initially, and then our highest 96\% after
+several rounds of denoising and augmentation.
 
 \subsection{Dataset modifications}
 We denoised our data by setting all pixels with a value smaller than 220 to 0. 
@@ -62,5 +92,23 @@ I helped perfect the model's training process by splitting the training set into
 I also wrote the code to get the predictions of the model on the test set and put them into a .csv file that could be submitted. 
 
 Finally, I wrote the code to perform the dataset augmentations and get a certain number of instances of each class by applying random transformations to instances we already had.
-\end{document}
 
+\subsection{Sheheryar}
+I worked on researching and working on the neural net model. I also
+contributed to the training/validation loop and helped with exploring
+different techniques for denoising, including thresholding the images at
+a given value.
+
+\begin{thebibliography}{2}
+  \bibitem{torchvisionmodels}
+  \textit{torchvision.models} -- PyTorch Documentation
+  \\\url{https://pytorch.org/docs/stable/torchvision/models.html}
+
+  \bibitem{kagglemnist}
+  Chris Deotte (\href{https://www.kaggle.com/cdeotte}{@cdeotte} on
+  Kaggle)
+  \textit{25 Million Images! [0.99757] MNIST}.
+  \\\url{https://www.kaggle.com/cdeotte/25-million-images-0-99757-mnist}
+\end{thebibliography}
+
+\end{document}
